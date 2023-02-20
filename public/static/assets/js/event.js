@@ -1,9 +1,24 @@
 // document.querySelector("#createRoom").addEventListener("click", () => {
 //     initRoomEvent("create_room");
 // }); //ACTION
+document.querySelector("#display-content-info").addEventListener("click", () => {
+    let content = document.querySelector(".content-info");
+    let mode = content.style.display;
+
+    // console.log(mode);
+    if (mode != "block") content.style.display = "block";
+    else content.style.display = "none";
+});
 
 document.querySelector("#joinGame").addEventListener("click", () => {
     initRoomEvent("join_game");
+});
+
+document.querySelector("#sendMessage").addEventListener("click", () => {
+    let content = document.querySelector("#message").value;
+    document.querySelector("#message").value = "";
+
+    socket.emit("send_message", content)
 });
 
 function initRoomEvent(event) {
@@ -13,11 +28,51 @@ function initRoomEvent(event) {
 }
 
 socket.on("map_update", (players) => {
-    console.log(players);
+    // console.log(socket.id);
+    // console.log(players);
+
     if (players != null) {
         canvasObject.players = players;
+
+        canvasObject.player = players.find((p) => p.socketID == socket.id);
+        // console.log(canvasObject.player);
     }
 });
+
+socket.on("players_list", (players) => {
+    displayPlayerList(players)
+});
+
+function displayPlayerList(players) {
+    let content = "<ul>";
+    players.forEach(player => {
+        content += '<li>' + player.pseudo + ' (' + player.status + ')' + '</li>';
+    });
+    content += "</ul>";
+    document.querySelector(".player-content").innerHTML = content;
+}
+
+socket.on("text_message", (messages) => {
+    displayMessages(messages);
+});
+
+
+function displayMessages(messages) {
+    let element = document.querySelector("#message-content");
+    element.innerHTML = "";
+
+    messages.forEach(message => {
+        let author = null;
+        if (message.player.socketID == socket.id) author = "myMessage";
+        else author = "otherMessage";
+
+        let messageHTML = '<div class="message ' + author + '">' + message.player.pseudo + ' : ' + message.content + '</div>';
+
+        element.innerHTML += messageHTML;
+
+        element.scrollTop = element.scrollHeight;
+    });
+}
 
 // document.querySelector("#display-content-info").addEventListener("click", () => {
 //     let content = document.querySelector(".content-info");
@@ -66,9 +121,7 @@ socket.on("map_update", (players) => {
 //     console.log("--------------------------------");
 // });
 
-// socket.on("players_list", (players) => {
-//     displayPlayerList(players)
-// });
+
 
 // socket.on("grid_refresh", (grid) => {
 //     if (grid != null) {
@@ -113,16 +166,7 @@ socket.on("map_update", (players) => {
 //     }
 // }
 
-// function displayPlayerList(players) {
-//     let content = "<ul>";
 
-//     players.forEach(player => {
-//         content += '<li>' + player.pseudo + ' (' + player.status + ')' + '</li>';
-//     });
-//     content += "</ul>";
-
-//     document.querySelector(".player-content").innerHTML = content;
-// }
 
 // function resetAllInformations(message) {
 //     document.querySelector(".status-content").innerHTML = '<span class="disconnected">Disconnected</span>';

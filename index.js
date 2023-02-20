@@ -1,5 +1,6 @@
 const { express, open, app, io, server, path } = require("./conf");
 const { Player } = require("./Player");
+const { Message } = require("./Message");
 // const { Room } = require("./Room");
 
 app.use("/static", express.static(path.resolve(__dirname, "public", "static")));
@@ -22,13 +23,21 @@ io.on('connection', (socket) => {
     console.log("Bonjour " + socket.id); //Première connexion
 
     socket.on("join_game", (pseudo) => {
+        disconnectPlayer(socket);
+
         socket.join("main");
 
-        let color = "rgb(" + getRandomNumber(0, 255) + "," + getRandomNumber(0, 255) + "," + getRandomNumber(0, 255) + ")";
+        let color = "rgb(" + getRandomNumber(0, 200) + "," + getRandomNumber(0, 200) + "," + getRandomNumber(0, 200) + ")";
 
         let newPlayer = new Player(socket.id, "main", pseudo, color, "Player");
+        newPlayer.x = getRandomNumber(-100, 100);
+        newPlayer.y = getRandomNumber(-100, 100);
 
         Player.addPlayer(newPlayer);
+
+        io.to("main").emit("players_list", Player.players);
+
+        io.to(socket.id).emit("text_message", Message.messages);
 
         console.log(Player.players);
     });
@@ -38,6 +47,8 @@ io.on('connection', (socket) => {
 
         disconnectPlayer(socket);
         console.log(Player.players);
+
+        io.to("main").emit("players_list", Player.players);
     });
 
     socket.on("move", (dx, dy) => {
@@ -45,11 +56,23 @@ io.on('connection', (socket) => {
 
         playerObj.move(dx, dy);
     });
+
+    socket.on("send_message", (content) => {
+        let player = Player.getPlayerBySocketID(socket.id);
+
+        if (player != null) {
+            let newMessage = new Message(player, content);
+
+            Message.addMessage(newMessage);
+
+            io.to("main").emit("text_message", Message.messages);
+        }
+    });
 });
 
 setInterval(() => {
     if (Player.players.length > 0) io.to("main").emit("map_update", Player.players);
-}, 10);
+}, 5);
 
 // socket.on("join_room", (room, pseudo) => { //Vire d'une room dans tous les cas ????????
 //     if (io.sockets.adapter.rooms.has(room)) { //Est ce que la room existe
@@ -119,16 +142,15 @@ setInterval(() => {
 
 
 function disconnectPlayer(socket) {
-    // leaveAllRoom(socket);
     let player = Player.getPlayerBySocketID(socket.id);
     if (player != null) {
-        // let room = player.roomID;
+        let room = player.roomID;
         Player.removePlayerBySocketID(socket.id);
         // let roomObj = Room.getRoomByRoomID(room);
         // if (roomObj != null) {
         //     roomObj.removePlayerBySocketID(socket.id);
         // }
-        // broadcast(socket, room, "players_list", Player.getPlayersByRoomID(room));
+        //broadcast(socket, room, "players_list", Player.getPlayersByRoomID(room));
     }
 }
 

@@ -5,7 +5,9 @@ class Player {
         this.socketID = socketID;
         this.pseudo = pseudo;
         this.roomID = roomID;
+        this.status = status;
         this.color = color;
+        this.isKing = false;
 
         this.x = 100;
         this.y = 100;
