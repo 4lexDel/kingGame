@@ -30,8 +30,8 @@ io.on('connection', (socket) => {
         let color = "rgb(" + getRandomNumber(0, 200) + "," + getRandomNumber(0, 200) + "," + getRandomNumber(0, 200) + ")";
 
         let newPlayer = new Player(socket.id, "main", pseudo, color, "Player");
-        newPlayer.x = getRandomNumber(-100, 100);
-        newPlayer.y = getRandomNumber(-100, 100);
+        newPlayer.x = getRandomNumber(-200, 200);
+        newPlayer.y = getRandomNumber(-200, 200);
 
         Player.addPlayer(newPlayer);
 
