@@ -21,6 +21,14 @@ server.listen(port, 'localhost', () => { //SERVEUR
 io.on('connection', (socket) => {
     console.log("Bonjour " + socket.id); //Première connexion
 
+    socket.on("join_game", (pseudo) => {
+        socket.join("main");
+        let newPlayer = new Player(socket.id, "main", pseudo, "Player", false);
+
+        Player.addPlayer(newPlayer);
+
+        console.log(Player.players);
+    });
 
     socket.on("disconnect", async() => {
         console.log("Au revoir " + socket.id);
@@ -94,6 +102,20 @@ io.on('connection', (socket) => {
     //     }
     // });
 });
+
+function disconnectPlayer(socket) {
+    // leaveAllRoom(socket);
+    let player = Player.getPlayerBySocketID(socket.id);
+    if (player != null) {
+        // let room = player.roomID;
+        Player.removePlayerBySocketID(socket.id);
+        // let roomObj = Room.getRoomByRoomID(room);
+        // if (roomObj != null) {
+        //     roomObj.removePlayerBySocketID(socket.id);
+        // }
+        // broadcast(socket, room, "players_list", Player.getPlayersByRoomID(room));
+    }
+}
 
 // function disconnectPlayer(socket) {
 //     leaveAllRoom(socket);

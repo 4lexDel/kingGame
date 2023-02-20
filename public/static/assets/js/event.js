@@ -2,9 +2,15 @@
 //     initRoomEvent("create_room");
 // }); //ACTION
 
-// document.querySelector("#joinRoom").addEventListener("click", () => {
-//     initRoomEvent("join_room");
-// });
+document.querySelector("#joinGame").addEventListener("click", () => {
+    initRoomEvent("join_game");
+});
+
+function initRoomEvent(event) {
+    let pseudo = document.querySelector("#pseudo").value;
+    console.log(event + " => Pseudo : " + pseudo);
+    socket.emit(event, pseudo);
+}
 
 // document.querySelector("#display-content-info").addEventListener("click", () => {
 //     let content = document.querySelector(".content-info");
@@ -24,14 +30,7 @@
 //     socket.emit("restart_game");
 // });
 
-// function initRoomEvent(event) {
-//     let pseudo = document.querySelector("#pseudo").value;
-//     let room = document.querySelector("#room").value;
 
-//     console.log(event + " => Pseudo : " + pseudo + " | Room : " + room);
-
-//     socket.emit(event, room, pseudo);
-// }
 
 // socket.on("room_joined", (state, player, message) => {
 //     if (player != null) {
