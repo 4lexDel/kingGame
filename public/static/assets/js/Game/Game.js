@@ -1,195 +1,97 @@
-// class Game extends GameBase { //A renommer ?
-//     constructor(canvas, fullscreen = true) {
-//         super(canvas, fullscreen)
+class Game extends GameBase { //A renommer ?
+    constructor(canvas, fullscreen = true) {
+        super(canvas, fullscreen)
 
-//         //this.init();
-//     }
+        this.init();
+    }
 
-//     init() {
-//         this.resize();
+    init() {
+        this.resize();
 
-//         this.initMap();
+        this.initMap();
 
-//         this.initEvent();
+        this.initEvent();
 
-//         /*---------Draw settings----------*/
-//         this.FPS = 15;
-//         this.prevTick = 0;
-//         this.draw();
-//         /*--------------------------------*/
+        /*---------Draw settings----------*/
+        this.FPS = 15;
+        this.prevTick = 0;
+        this.draw();
+        /*--------------------------------*/
 
-//         this.playerToPlay = true;
+        this.players = [];
+    }
 
-//         this.x1 = -1;
-//         this.y1 = -1;
-//         this.x2 = -1;
-//         this.y2 = -1;
+    initMap() {
 
-//         this.actionTime = 1;
-//     }
+    }
 
-//     initMap() {
-//         this.mapAction = new Tilemap(5, 5, this.canvas.width, this.canvas.height);
-//         let noAction = new TileSet(0, TileSet.FILL_RECT, 0);
-//         let source = new TileSet(1, "green", TileSet.FILL_RECT, 0.2);
-//         let destination = new TileSet(2, "red", TileSet.FILL_RECT, 0.2);
+    initEvent() {
+        this.canvas.onmouseup = (e) => {
+            this.mouseAction(e);
+        }
 
-//         this.mapAction.addTileSet(noAction);
-//         this.mapAction.addTileSet(source);
-//         this.mapAction.addTileSet(destination);
+        window.onresize = (e) => {
+            this.resize();
+        };
 
+        document.addEventListener("keydown", (e) => { //KEYBOARD EVENT
+            //console.log(e.key);
+            switch (e.key) {
+                case "Enter":
+                    break;
+                case "ArrowUp":
+                    socket.emit("move", 0, -5);
+                    break;
 
-//         this.mapPlayer = new Tilemap(5, 5, this.canvas.width, this.canvas.height);
+                case "ArrowDown":
+                    socket.emit("move", 0, 5);
+                    break;
 
-//         let voidTile = new TileSet(0, "rgb(240,240,240)");
-//         let firstPlayer = new TileSet(1, "red", TileSet.FILL_ELLIPSE);
-//         let secondPlayer = new TileSet(2, "orange", TileSet.FILL_ELLIPSE);
-//         let bobail = new TileSet(3, "blue", TileSet.FILL_ELLIPSE);
+                case "ArrowRight":
+                    socket.emit("move", 5, 0);
+                    break;
 
-//         this.mapPlayer.addTileSet(voidTile);
-//         this.mapPlayer.addTileSet(firstPlayer);
-//         this.mapPlayer.addTileSet(secondPlayer);
-//         this.mapPlayer.addTileSet(bobail);
+                case "ArrowLeft":
+                    socket.emit("move", -5, 0);
+                    break;
+            }
+        });
+    }
 
-//         this.grid = [
-//             [0, 0, 0, 0, 0],
-//             [0, 0, 0, 0, 0],
-//             [0, 0, 0, 0, 0],
-//             [0, 0, 0, 0, 0],
-//             [0, 0, 0, 0, 0],
-//         ];
+    mouseAction(e) {
+        let coord = MouseControl.getMousePos(this.canvas, e);
+        //let val = e.which == 1 ? 1 : 0;
+        //this.map.setTileID(coord.x, coord.y, val);
+        this.manageCoords(coord.x, coord.y);
+    }
 
-//         this.mapPlayer.grid = this.grid;
-//     }
+    manageCoords(x, y) {
 
-//     initEvent() {
-//         this.canvas.onmouseup = (e) => {
-//             this.mouseAction(e);
-//         }
+    }
 
-//         // this.canvas.addEventListener('touchend', (e) => {
-//         //     this.touchAction(e);
-//         // }, false);
+    draw() {
+        /*------------------------------FPS-----------------------------*/
+        window.requestAnimationFrame(() => this.draw());
 
-//         window.onresize = (e) => {
-//             this.resize();
-//             this.mapPlayer.resize(this.canvas.width, this.canvas.height); //DRY !!
-//             this.mapAction.resize(this.canvas.width, this.canvas.height); //DRY !!
-//         };
+        let now = Math.round(this.FPS * Date.now() / 1000);
+        if (now == this.prevTick) return;
+        this.prevTick = now;
+        /*--------------------------------------------------------------*/
 
-//         // document.addEventListener("keyup", (e) => { //KEYBOARD EVENT
-//         //     //console.log(e.key);
+        //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.width);
+        this.ctx.fillStyle = "rgb(210,210,210)";
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.displayPlayers();
+    }
 
-//         //     switch (e.key) {
-//         //         case "Enter":
-//         //             this.start = !this.start;
-//         //             break;
-
-//         //         case "ArrowUp":
-//         //         case "ArrowDown":
-//         //             this.map.writeLine(1, false);
-//         //             this.start = false;
-//         //             break;
-
-//         //         case "ArrowRight":
-//         //         case "ArrowLeft":
-//         //             this.map.writeLine(1, true);
-//         //             this.start = false;
-//         //             break;
-
-//         //         case "Backspace":
-//         //             this.start = false;
-//         //             this.map.resetGrid();
-//         //             break;
-//         //     }
-//         // });
-//     }
-
-//     mouseAction(e) {
-//         let coord = MouseControl.getMousePos(this.canvas, e);
-//         //let val = e.which == 1 ? 1 : 0;
-//         //this.map.setTileID(coord.x, coord.y, val);
-//         this.mapAction.resetGrid();
-
-//         this.managePieceCoords(coord.x, coord.y);
-//     }
-
-//     // touchAction(e) {
-//     //     let coord = TouchControl.getTouchPos(this.canvas, e);
-//     //     this.mapAction.resetGrid();
-//     //     this.mapAction.setTileID(coord.x, coord.y, 1);
-
-//     //     this.managePieceCoords(coord.x, coord.y);
-//     // }
-
-//     managePieceCoords(x, y) {
-//         let gridCoord = this.mapAction.getGridCoord(x, y);
-
-//         // console.log(gridCoord);
-
-//         let valSelected = this.getGridValue(gridCoord.x, gridCoord.y, this.mapPlayer.grid);
-
-//         if (this.actionTime == 1 && valSelected != 0 && valSelected != -1) {
-//             this.x1 = gridCoord.x;
-//             this.y1 = gridCoord.y;
-
-//             this.mapAction.setTileID(x, y, 1);
-
-//             this.actionTime = 2;
-//         } else {
-//             let valSelected = this.getGridValue(gridCoord.x, gridCoord.y, this.mapPlayer.grid);
-
-//             if (valSelected != 0) { //                          2ième case forcement vide !!
-//                 this.mapAction.setTileID(x, y, 1);
-//                 this.actionTime = 1;
-//             } else {
-//                 this.x2 = gridCoord.x;
-//                 this.y2 = gridCoord.y;
-
-//                 this.mapAction.setTileID(x, y, 2);
-
-//                 this.actionTime = 1;
-
-//                 // console.log("test");
-//                 if (playerInfo != null && (playerInfo.status == "Player1" || playerInfo.status == "Player2")) {
-//                     if (playerInfo.status == "Player2") {
-//                         //reverse coord
-//                         this.x1 = 4 - this.x1;
-//                         this.y1 = 4 - this.y1;
-//                         this.x2 = 4 - this.x2;
-//                         this.y2 = 4 - this.y2;
-//                     }
-
-//                     socket.emit("piece_move", this.x1, this.y1, this.x2, this.y2);
-//                 }
-//             }
-//         }
-//     }
-
-//     getGridValue(x, y, grid) {
-//         if (x < 0 || x >= 5 || y < 0 || y >= 5) return -1;
-//         return grid[x][y];
-//     }
-
-//     draw() {
-//         /*------------------------------FPS-----------------------------*/
-//         window.requestAnimationFrame(() => this.draw());
-
-//         let now = Math.round(this.FPS * Date.now() / 1000);
-//         if (now == this.prevTick) return;
-//         this.prevTick = now;
-//         /*--------------------------------------------------------------*/
-
-//         //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.width);
-//         this.ctx.fillStyle = "rgb(240,240,240)";
-//         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-//         if (this.mapPlayer != null) this.mapPlayer.display(this.ctx);
-//         if (this.mapAction != null) this.mapAction.display(this.ctx);
-//     }
-
-//     setPlayerMap(newGrid, reverse = false) {
-//         this.mapPlayer.grid = newGrid;
-//         if (reverse) this.mapPlayer.reverseGrid();
-//     }
-// }
+    displayPlayers() {
+        if (this.players != null && this.players.length > 0) {
+            this.players.forEach(player => {
+                this.ctx.fillStyle = player.color;
+                this.ctx.beginPath();
+                this.ctx.ellipse(player.x, player.y, 50, 50, 0, 0, 2 * Math.PI);
+                this.ctx.fill();
+            });
+        }
+    }
+}

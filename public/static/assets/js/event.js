@@ -12,6 +12,13 @@ function initRoomEvent(event) {
     socket.emit(event, pseudo);
 }
 
+socket.on("map_update", (players) => {
+    console.log(players);
+    if (players != null) {
+        canvasObject.players = players;
+    }
+});
+
 // document.querySelector("#display-content-info").addEventListener("click", () => {
 //     let content = document.querySelector(".content-info");
 //     let mode = content.style.display;

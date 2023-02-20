@@ -1,12 +1,14 @@
 class Player {
     static players = [];
 
-    constructor(socketID, roomID, pseudo, status, isAdmin = false) {
+    constructor(socketID, roomID, pseudo, color, status = "Player") {
         this.socketID = socketID;
         this.pseudo = pseudo;
         this.roomID = roomID;
-        this.status = status;
-        this.isAdmin = isAdmin;
+        this.color = color;
+
+        this.x = 100;
+        this.y = 100;
     }
 
     static addPlayer(player) {
@@ -41,11 +43,10 @@ class Player {
         return player;
     }
 
-    // static addPlayer(player) {
-    //     this.players.push(player);
-    // }
-
-
+    move(dx, dy) {
+        this.x += dx;
+        this.y += dy;
+    }
 
 
 }

@@ -7,13 +7,21 @@ canvas {
     background-color: transparent;
 }
 
+.main-title {
+    /* margin: auto; */
+    position: fixed;
+    text-align: center;
+    z-index: 10000;
+    left: 5%;
+}
+
 .game-content {
     position: fixed;
     /* background-color: #59accf; */
-    width: 90%;
-    height: 70%;
-    left: 5%;
-    bottom: 5%;
+    width: 100%;
+    height: 100%;
+    left: 0%;
+    bottom: 0%;
 }
 
 .tooltip {
