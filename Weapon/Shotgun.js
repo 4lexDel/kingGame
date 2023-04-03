@@ -5,7 +5,7 @@ class ShotGun extends Weapon {
     constructor(ownerID) {
         super(ownerID);
 
-        this.name = "Shotgun";
+        this.name = "ShotGun";
 
         this.loadingDelay = 500; //1000;
         this.bulletTtl = 300;
