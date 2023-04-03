@@ -236,45 +236,61 @@ class Game extends GameBase { //A renommer ?
         this.ctx.restore();
     }
 
+    checkCoordOnVisibleMap(x, y) {
+        let k = 1.5; //marge
+        if (x < this.player.x - k * this.canvas.width / 2 ||
+            x > this.player.x + k * this.canvas.width / 2 ||
+            y < this.player.y - k * this.canvas.height / 2 ||
+            y > this.player.y + k * this.canvas.height / 2) return false;
+
+        return true;
+    }
+
     displayPlayers() {
         this.players.forEach(player => {
-            this.ctx.fillStyle = player.color;
-            this.ctx.beginPath();
-            // console.log(player);
-            this.ctx.ellipse(player.x, player.y, player.size, player.size, 0, 0, 2 * Math.PI);
-            this.ctx.fill();
+            if (this.checkCoordOnVisibleMap(player.x, player.y)) {
+                this.ctx.fillStyle = player.color;
+                this.ctx.beginPath();
+                // console.log(player);
+                this.ctx.ellipse(player.x, player.y, player.size, player.size, 0, 0, 2 * Math.PI);
+                this.ctx.fill();
 
-            this.ctx.fillStyle = "black";
-            this.ctx.textAlign = "center";
-            // this.ctx.textBaseline = 'middle';
-            this.ctx.fillText(player.pseudo, player.x, player.y - player.size - this.fontSize / 2);
+                this.ctx.fillStyle = "black";
+                this.ctx.textAlign = "center";
+                // this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(player.pseudo, player.x, player.y - player.size - this.fontSize / 2);
+            }
         });
     }
 
     displayBullets() {
         this.bullets.forEach(bullet => {
-            this.ctx.fillStyle = "black";
-            this.ctx.beginPath();
-            this.ctx.ellipse(bullet.x, bullet.y, bullet.radius, bullet.radius, 0, 0, 2 * Math.PI);
-            this.ctx.fill();
+            if (this.checkCoordOnVisibleMap(bullet.x, bullet.y)) {
+                this.ctx.fillStyle = "black";
+                this.ctx.beginPath();
+                this.ctx.ellipse(bullet.x, bullet.y, bullet.radius, bullet.radius, 0, 0, 2 * Math.PI);
+                this.ctx.fill();
+            }
         });
     }
 
     displayItems() {
         this.items.forEach(item => {
-            this.ctx.save();
-            this.ctx.translate(item.x, item.y);
+            if (this.checkCoordOnVisibleMap(item.x, item.y)) {
+                this.ctx.save();
+                this.ctx.translate(item.x, item.y);
 
-            this.ctx.fillStyle = "rgb(190, 190, 190)";
-            this.ctx.beginPath();
-            this.ctx.ellipse(0, 0, item.size, item.size, 0, 0, 2 * Math.PI);
-            this.ctx.fill();
+                this.ctx.fillStyle = "rgb(190, 190, 190)";
+                this.ctx.beginPath();
+                this.ctx.ellipse(0, 0, item.size, item.size, 0, 0, 2 * Math.PI);
+                this.ctx.fill();
 
-            this.ctx.rotate(item.frameCount / 50);
+                this.ctx.rotate(item.frameCount / 50);
 
-            this.displayItemFrameByName(item.name, 0, 0, 2 * item.size, 2 * item.size);
+                this.displayItemFrameByName(item.name, 0, 0, 2 * item.size, 2 * item.size);
 
-            this.ctx.restore();
+                this.ctx.restore();
+            }
         });
     }
 
