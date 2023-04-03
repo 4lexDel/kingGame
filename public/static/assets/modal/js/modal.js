@@ -23,20 +23,11 @@ for (let i = 0; i < buttons.length; i++) {
         });
 
         let deleteButtons = modal.getElementsByClassName('modal-close');
-        let deleteBacks = modal.getElementsByClassName('modal-back');
 
         for (let j = 0; j < deleteButtons.length; j++) {
             const deleteButton = deleteButtons[j];
 
             deleteButton.addEventListener("click", function() {
-                modal.style.display = "none";
-            });
-        }
-
-        for (let j = 0; j < deleteBacks.length; j++) {
-            const deleteBack = deleteBacks[j];
-
-            deleteBack.addEventListener("click", function() {
                 modal.style.display = "none";
             });
         }
