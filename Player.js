@@ -1,3 +1,7 @@
+const { MachineGun } = require("./Weapon/MachineGun");
+const { Shotgun } = require("./Weapon/Shotgun");
+const { Weapon } = require("./Weapon/Weapon");
+
 class Player {
     static players = [];
 
@@ -11,6 +15,11 @@ class Player {
 
         this.x = 100;
         this.y = 100;
+
+        this.radius = 20;
+
+        this.weapon = new Shotgun(socketID);
+        //this.weapon = new MachineGun(socketID);
     }
 
     static addPlayer(player) {
@@ -50,7 +59,9 @@ class Player {
         this.y += dy;
     }
 
-
+    shot(x, y, dx, dy) {
+        this.weapon.shot(x, y, dx, dy);
+    }
 }
 
 

@@ -27,7 +27,7 @@ function initRoomEvent(event) {
     socket.emit(event, pseudo);
 }
 
-socket.on("map_update", (players) => {
+socket.on("map_update", (players, bullets) => {
     // console.log(socket.id);
     // console.log(players);
 
@@ -36,6 +36,10 @@ socket.on("map_update", (players) => {
 
         canvasObject.player = players.find((p) => p.socketID == socket.id);
         // console.log(canvasObject.player);
+    }
+
+    if (bullets != null) {
+        canvasObject.bullets = bullets;
     }
 });
 

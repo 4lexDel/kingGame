@@ -1,0 +1,16 @@
+Riffle
+Gun
+Sniper
+Shotgun
+MachineGun
+
+Sabre laser
+
+Sword
+Shield
+
+Freezer pour le roi
+
+
+Recup avec des chests 
+Bonus

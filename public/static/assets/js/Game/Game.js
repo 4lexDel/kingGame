@@ -26,7 +26,11 @@ class Game extends GameBase { //A renommer ?
         this.players = [];
         this.player = null; //Own player
 
+        this.bullets = [];
+
         this.gridSpacing = 60;
+
+        this.fontSize = 20;
     }
 
     initMap() {
@@ -47,11 +51,11 @@ class Game extends GameBase { //A renommer ?
         console.log(this.canvas);
 
         this.canvas.onmousedown = (e) => {
-            this.refreshMouseCoord(e);
-            this.mousePressed = true;
+            this.shotBullet(e);
+            //this.mousePressed = true;
         };
         this.canvas.onmouseup = (e) => {
-            this.refreshMouseCoord(e);
+
             this.mousePressed = false;
         };
         this.canvas.onmousemove = (e) => { this.refreshMouseCoord(e); };
@@ -105,6 +109,35 @@ class Game extends GameBase { //A renommer ?
     //     this.manageCoords(coord.x, coord.y);
     // }
 
+    shotBullet(e) {
+        let coord = MouseControl.getMousePos(this.canvas, e);
+
+        let bx = coord.x;
+        let by = coord.y;
+
+        let deltaX = bx - this.canvas.width / 2;
+        let deltaY = by - this.canvas.height / 2; //Vu que on est toujours au centre
+
+        // let length = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+        let alpha = Math.atan(deltaY / deltaX);
+
+        if (deltaX < 0) alpha = Math.PI + Math.atan(deltaY / deltaX);
+        else alpha = Math.atan(deltaY / deltaX);
+
+        // if (posX < cibleX) {
+        //     a = atan((posY - cibleY) / (posX - cibleX)); //Calcule angle par raport a la souris
+        // }
+        // if (posX > cibleX) {
+        //     a = PI + atan((cibleY - posY) / (cibleX - posX));
+        // }
+
+        // console.log(`dx ${deltaX} dy ${deltaY}`);
+        // console.log(`length ${length}`);
+        // console.log(this.player);
+
+        socket.emit("shot", this.player.x, this.player.y, alpha);
+    }
+
     refreshTouchCoord(e) {
         let coord = TouchControl.getTouchPos(this.canvas, e);
 
@@ -120,7 +153,7 @@ class Game extends GameBase { //A renommer ?
     }
 
     manageCoords() {
-        if (this.mousePressed && this.player != null) {
+        if (this.player != null) {
             // console.log(this.mouseX + " | " + this.mouseY);
             let deltaX = this.mouseX - this.canvas.width / 2;
             let deltaY = this.mouseY - this.canvas.height / 2; //Vu que on est toujours au centre
@@ -132,6 +165,10 @@ class Game extends GameBase { //A renommer ?
     }
 
     draw() {
+        // var posX = event.clientX;
+        // var posY = event.clientY;
+
+        // console.log(`x : ${posX} y : ${posY}`);
         /*------------------------------FPS-----------------------------*/
         window.requestAnimationFrame(() => this.draw());
 
@@ -151,8 +188,11 @@ class Game extends GameBase { //A renommer ?
             this.ctx.translate(this.canvas.width / 2 - this.player.x, this.canvas.height / 2 - this.player.y);
 
             this.displayPlayers();
+            this.displayBullets();
 
             this.ctx.restore();
+
+            this.displayCoords();
         }
 
         this.manageCoords();
@@ -184,9 +224,31 @@ class Game extends GameBase { //A renommer ?
         this.players.forEach(player => {
             this.ctx.fillStyle = player.color;
             this.ctx.beginPath();
-            this.ctx.ellipse(player.x, player.y, 20, 20, 0, 0, 2 * Math.PI);
+            // console.log(player);
+            this.ctx.ellipse(player.x, player.y, player.radius, player.radius, 0, 0, 2 * Math.PI);
+            this.ctx.fill();
+
+            this.ctx.fillStyle = "black";
+            this.ctx.textAlign = "center";
+            // this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(player.pseudo, player.x, player.y - player.radius - this.fontSize / 2);
+        });
+    }
+
+    displayBullets() {
+        this.bullets.forEach(bullet => {
+            this.ctx.fillStyle = "black";
+            this.ctx.beginPath();
+            this.ctx.ellipse(bullet.x, bullet.y, bullet.radius, bullet.radius, 0, 0, 2 * Math.PI);
             this.ctx.fill();
         });
+    }
 
+    displayCoords() {
+        this.ctx.font = 20 + "px serif";
+        this.ctx.fillStyle = "black";
+        // this.ctx.textAlign = "center";
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(`x = ${parseInt(this.player.x)} | y = ${parseInt(this.player.y)}`, this.fontSize, this.canvas.height - this.fontSize);
     }
 }

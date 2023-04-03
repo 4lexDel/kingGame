@@ -1,6 +1,7 @@
 const { express, open, app, io, server, path } = require("./conf");
 const { Player } = require("./Player");
 const { Message } = require("./Message");
+const { Bullet } = require("./Bullet");
 // const { Room } = require("./Room");
 
 app.use("/static", express.static(path.resolve(__dirname, "public", "static")));
@@ -39,22 +40,34 @@ io.on('connection', (socket) => {
 
         io.to(socket.id).emit("text_message", Message.messages);
 
-        console.log(Player.players);
+        // console.log(Player.players);
     });
 
     socket.on("disconnect", async() => {
         console.log("Au revoir " + socket.id);
 
         disconnectPlayer(socket);
-        console.log(Player.players);
+        // console.log(Player.players);
 
         io.to("main").emit("players_list", Player.players);
     });
 
     socket.on("move", (dx, dy) => {
-        let playerObj = Player.getPlayerBySocketID(socket.id);
+        if (dx != undefined && dy != undefined) {
+            let playerObj = Player.getPlayerBySocketID(socket.id);
 
-        playerObj.move(dx, dy);
+            if (playerObj) playerObj.move(dx, dy);
+        }
+    });
+
+    socket.on("shot", (x, y, alpha) => {
+        if (x != undefined && y != undefined && alpha != undefined) {
+            let player = Player.getPlayerBySocketID(socket.id);
+
+            if (player != null) {
+                player.shot(x, y, alpha);
+            }
+        }
     });
 
     socket.on("send_message", (content) => {
@@ -71,8 +84,28 @@ io.on('connection', (socket) => {
 });
 
 setInterval(() => {
-    if (Player.players.length > 0) io.to("main").emit("map_update", Player.players);
-}, 5);
+    update();
+}, 10);
+
+function update() {
+    refreshMap();
+    checkCollision();
+    moveBullet();
+}
+
+function refreshMap() {
+    if (Player.players.length > 0) io.to("main").emit("map_update", Player.players, Bullet.bullets);
+}
+
+function checkCollision() {
+    //for
+}
+
+function moveBullet() {
+    Bullet.bullets.forEach(bullet => {
+        bullet.move();
+    });
+}
 
 // socket.on("join_room", (room, pseudo) => { //Vire d'une room dans tous les cas ????????
 //     if (io.sockets.adapter.rooms.has(room)) { //Est ce que la room existe
