@@ -25,17 +25,17 @@ class Bullet {
     }
 
     static addBullet(bullet) {
-        this.bullets.push(bullet);
+        Bullet.bullets.push(bullet);
     }
 
     static removeBulletByID(id) {
-        this.bullets = this.bullets.filter((bullet) => {
+        Bullet.bullets = Bullet.bullets.filter((bullet) => {
             if (bullet.id != id) return bullet;
         });
     }
 
     static getBulletBySocketID(socketID) {
-        let bullet = this.bullets.find((bullet) => {
+        let bullet = Bullet.bullets.find((bullet) => {
             if (bullet.socketID == socketID) return bullet;
         });
 

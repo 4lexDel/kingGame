@@ -1,8 +1,11 @@
 const { express, open, app, io, server, path } = require("./conf");
 const { Player } = require("./Player");
+const { Item } = require("./Item");
 const { Message } = require("./Message");
 const { Bullet } = require("./Bullet");
-// const { Room } = require("./Room");
+const { MachineGun } = require("./Weapon/MachineGun");
+const { ShotGun } = require("./Weapon/ShotGun");
+const { Weapon } = require("./Weapon/Weapon");
 
 app.use("/static", express.static(path.resolve(__dirname, "public", "static")));
 
@@ -70,6 +73,33 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on("collect_item", () => {
+        let player = Player.getPlayerBySocketID(socket.id);
+
+        if (player != null) {
+            let itemCollected = checkCollision(player.x, player.y, player.size, Item.items);
+
+            if (itemCollected) {
+                player.itemSelected = itemCollected.name;
+
+                switch (itemCollected.name) {
+                    case "MachineGun": //2
+                        player.weapon = new MachineGun(socket.id);
+                        break;
+
+                    case "ShotGun": //3
+                        player.weapon = new ShotGun(socket.id);
+                        break;
+
+                    default: //0
+                        player.weapon = new ShotGun(socket.id);
+                        break;
+                }
+                Item.removeItemByID(itemCollected.id);
+            }
+        }
+    });
+
     socket.on("send_message", (content) => {
         let player = Player.getPlayerBySocketID(socket.id);
 
@@ -83,27 +113,92 @@ io.on('connection', (socket) => {
     });
 });
 
+/**------------------------------------------ */
+var minX = -10000;
+var minY = -10000;
+
+var maxX = 10000;
+var maxY = 10000;
+
+generateMap();
+
 setInterval(() => {
     update();
 }, 10);
 
 function update() {
     refreshMap();
-    checkCollision();
     moveBullet();
+    refreshItem();
 }
+
+/**-------------------------------------------- */
+
+function generateMap() {
+    let nbWeapons = 3000;
+
+    //1-5 MachineGun
+    //6-8 ShotGun
+    //9-10 Sniper
+    //11-13 Rocket
+
+    for (let i = 0; i < nbWeapons; i++) {
+        let rx = parseInt(getRandomNumber(minX, maxX));
+        let ry = parseInt(getRandomNumber(minY, maxY));
+
+        let type = parseInt(getRandomNumber(1, 13));
+
+        if (type <= 5) {
+            new Item("MachineGun", rx, ry);
+            continue;
+        }
+        if (type <= 8) {
+            new Item("ShotGun", rx, ry);
+            continue;
+        }
+        if (type <= 10) {
+            new Item("Sniper", rx, ry);
+            continue;
+        }
+        if (type <= 13) {
+            new Item("Rocket", rx, ry);
+            continue;
+        }
+    }
+    // console.log(Item.items);
+}
+
+function getRandomNumber(min, max) {
+    return min + Math.random() * (max - min);
+}
+
 
 function refreshMap() {
-    if (Player.players.length > 0) io.to("main").emit("map_update", Player.players, Bullet.bullets);
+    if (Player.players.length > 0) io.to("main").emit("map_update", { players: Player.players, bullets: Bullet.bullets, items: Item.items });
 }
 
-function checkCollision() {
-    //for
+function checkCollision(x1, y1, r1, listObj) { //listObj contain instance with : x, y, size
+    for (const key in listObj) {
+        const element = listObj[key];
+        if (dist(x1, y1, element.x, element.y) <= r1 + element.size) return element;
+    }
+
+    return undefined;
+}
+
+function dist(x1, y1, x2, y2) {
+    return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
 }
 
 function moveBullet() {
     Bullet.bullets.forEach(bullet => {
         bullet.move();
+    });
+}
+
+function refreshItem() {
+    Item.items.forEach(item => {
+        item.frameCount++;
     });
 }
 

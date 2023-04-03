@@ -27,19 +27,23 @@ function initRoomEvent(event) {
     socket.emit(event, pseudo);
 }
 
-socket.on("map_update", (players, bullets) => {
+socket.on("map_update", (gameObjects) => {
     // console.log(socket.id);
     // console.log(players);
 
-    if (players != null) {
-        canvasObject.players = players;
+    if (gameObjects.players != null) {
+        canvasObject.players = gameObjects.players;
 
-        canvasObject.player = players.find((p) => p.socketID == socket.id);
+        canvasObject.player = gameObjects.players.find((p) => p.socketID == socket.id);
         // console.log(canvasObject.player);
     }
 
-    if (bullets != null) {
-        canvasObject.bullets = bullets;
+    if (gameObjects.bullets != null) {
+        canvasObject.bullets = gameObjects.bullets;
+    }
+
+    if (gameObjects.items != null) {
+        canvasObject.items = gameObjects.items;
     }
 });
 

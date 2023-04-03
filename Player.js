@@ -1,5 +1,5 @@
 const { MachineGun } = require("./Weapon/MachineGun");
-const { Shotgun } = require("./Weapon/Shotgun");
+const { ShotGun } = require("./Weapon/ShotGun");
 const { Weapon } = require("./Weapon/Weapon");
 
 class Player {
@@ -16,30 +16,25 @@ class Player {
         this.x = 100;
         this.y = 100;
 
-        this.radius = 20;
+        this.size = 20;
 
-        this.weapon = new Shotgun(socketID);
+        this.itemSelected = "Gun"; //A refacto
+        this.weapon = new ShotGun(socketID);
         //this.weapon = new MachineGun(socketID);
     }
 
     static addPlayer(player) {
-        this.players.push(player);
+        Player.players.push(player);
     }
 
     static removePlayerBySocketID(socketID) {
-        // this.players = this.players.filter((player) => {
-        //     if (player.id != socketID) return player;
-        // });
-        for (let i = 0; i < this.players.length; i++) {
-            if (this.players[i].socketID == socketID) {
-                this.players = this.players.slice(0, i).concat(this.players.slice(i + 1));
-                break;
-            }
-        }
+        Player.players = Player.players.filter((player) => {
+            if (player.socketID != socketID) return player;
+        })
     }
 
     static getPlayerBySocketID(socketID) {
-        let player = this.players.find((player) => {
+        let player = Player.players.find((player) => {
             if (player.socketID == socketID) return player;
         });
 
@@ -47,7 +42,7 @@ class Player {
     }
 
     static getPlayersByRoomID(RoomID) {
-        let player = this.players.filter((player) => {
+        let player = Player.players.filter((player) => {
             if (player.roomID == RoomID) return player;
         });
 

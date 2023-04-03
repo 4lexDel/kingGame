@@ -5,8 +5,13 @@ class MachineGun extends Weapon {
     constructor(ownerID) {
         super(ownerID);
 
+        this.name = "MachineGun";
+
         this.loadingDelay = 150;
-        this.bulletTtl = 200;
+        this.bulletTtl = 1000;
+
+        this.speed = 15;
+
     }
 
     shot(x, y, alpha) {

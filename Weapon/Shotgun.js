@@ -1,9 +1,11 @@
 const { Bullet } = require("../Bullet");
 const { Weapon } = require("./Weapon");
 
-class Shotgun extends Weapon {
+class ShotGun extends Weapon {
     constructor(ownerID) {
         super(ownerID);
+
+        this.name = "Shotgun";
 
         this.loadingDelay = 500; //1000;
         this.bulletTtl = 300;
@@ -27,4 +29,4 @@ class Shotgun extends Weapon {
 }
 
 
-module.exports = { Shotgun }
+module.exports = { ShotGun }

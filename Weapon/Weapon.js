@@ -4,6 +4,8 @@ class Weapon {
     constructor(ownerID) {
         this.ownerID = ownerID;
 
+        this.name = "Weapon";
+
         this.loading = true;
         this.loadingDelay = 500;
         this.speed = 10;

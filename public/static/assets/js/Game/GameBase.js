@@ -30,5 +30,18 @@ class GameBase {
         // this.canvas.height = document.documentElement.clientHeight;
     }
 
+    preloadImages(urls) { //Load IMG by URL and return Image instance
+        const promises = urls.map((url) => {
+            return new Promise((resolve, reject) => {
+                const image = new Image();
 
+                image.src = url;
+
+                image.onload = () => resolve(image);
+                image.onerror = () => reject(`Image failed to load: ${url}`);
+            });
+        });
+
+        return Promise.all(promises);
+    }
 }
