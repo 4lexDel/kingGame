@@ -19,7 +19,7 @@ const port = 5000;
     //await open('http://localhost:' + port + '/');
 })();
 
-server.listen(port, 'localhost', () => { //SERVEUR
+server.listen(port, 'localhost', () => { //SERVEUR //10.144.129.192
     console.log('Ecoute sur le port ' + port);
 });
 
@@ -174,7 +174,7 @@ function getRandomNumber(min, max) {
 
 
 function refreshMap() {
-    if (Player.players.length > 0) io.to("main").emit("map_update", { players: Player.players, bullets: Bullet.bullets, items: Item.items });
+    if (Player.players.length > 0) io.to("main").volatile.emit("map_update", { players: Player.players, bullets: Bullet.bullets, items: Item.items });
 }
 
 function checkCollision(x1, y1, r1, listObj) { //listObj contain instance with : x, y, size
